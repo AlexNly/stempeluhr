@@ -2,6 +2,8 @@
 
 Public, German-language time tracking with Apple Shortcuts + CSV in iCloud Drive.
 Audience: German colleagues — UI, docs and messages in German.
+`AGENTS.md` = setup guide for agents installing it for a user; keep it in sync
+with README/build.py when setup steps change.
 
 - `build.py` generates the Shortcuts from `config.toml` (fallback
   `config.example.toml`); `--fertig` rebuilds the committed default set in

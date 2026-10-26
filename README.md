@@ -12,6 +12,10 @@ Feiertage pro Bundesland).
 
 ## Installation
 
+> 🤖 Mit einem KI-Agenten (Claude Code, Codex, …)? Einfach sagen:
+> *„Richte mir Stempeluhr ein: https://github.com/AlexNly/stempeluhr“* —
+> die Anleitung für den Agenten steht in [`AGENTS.md`](AGENTS.md).
+
 ### 1. Datenordner anlegen
 
 In der **Dateien**-App (iPhone) bzw. im Finder: `iCloud Drive → Shortcuts` →
