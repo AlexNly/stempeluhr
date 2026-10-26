@@ -1,0 +1,17 @@
+# Stempeluhr — Konfiguration. Kopieren nach config.toml und anpassen.
+
+# Vertragliche Wochenarbeitszeit (netto, ohne Pausen), verteilt auf Mo–Fr
+wochenstunden = 38.5
+
+# Bundesland für die Feiertage (Kürzel):
+# BW BY BE BB HB HH HE MV NI NW RP SL SN ST SH TH
+bundesland = "NW"
+
+# Ordner in "iCloud Drive/Shortcuts/", in dem die Daten liegen
+ordner = "Stempeluhr"
+
+# Arbeitsorte — pro Ort entstehen die Kurzbefehle "<Ort> Start" und "<Ort> Ende"
+orte = ["Büro", "Homeoffice"]
+
+# Welcher Ort ist Homeoffice? (für "HO Check" um 10 Uhr und "HO Ende Check" um 18 Uhr)
+homeoffice = "Homeoffice"
