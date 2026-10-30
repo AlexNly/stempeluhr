@@ -1,7 +1,10 @@
 # AGENTS.md — Stempeluhr für jemanden einrichten
 
 Anleitung für KI-Agenten (Claude Code, Codex, …), die Stempeluhr auf dem Mac
-einer Person einrichten. Mit der Person **auf Deutsch** sprechen.
+einer Person einrichten. **Zuerst die Sprache klären** (Deutsch oder Englisch) und
+dann in dieser Sprache mit der Person sprechen.
+(English speakers: follow the same steps; use `config.example.en.toml` and the
+English shortcut names in parentheses below.)
 Hinweise zur Weiterentwicklung des Codes stehen in `CLAUDE.md`.
 
 ## Was du tun kannst — und was nicht
@@ -33,11 +36,14 @@ zu aktivieren. Nicht selbst anlegen.
 
 ```sh
 git clone https://github.com/AlexNly/stempeluhr.git ~/stempeluhr   # oder wohin die Person will
-cd ~/stempeluhr && cp config.example.toml config.toml
+cd ~/stempeluhr && cp config.example.toml config.toml      # Englisch: config.example.en.toml
 ```
 
 Die Person **fragen** (nicht raten) und `config.toml` füllen:
 
+- `sprache` — `"de"` oder `"en"`: Texte der Kurzbefehle und der Auswertung.
+  Bestimmt auch die Kurzbefehl-Namen (Feierabend ↔ Clock Out, HO Ende Check ↔
+  HO End Check, Wochenstatus ↔ Weekly Status). Datenformat ist in beiden gleich.
 - `wochenstunden` — laut Arbeitsvertrag, netto (z.B. 38.5, 40, Teilzeit 20)
 - `bundesland` — Kürzel (NW, BY, BE, …), für die Feiertage
 - `orte` — wo sie arbeitet, z.B. `["Büro", "Homeoffice"]` oder Stadtnamen.
@@ -64,8 +70,8 @@ python3 build.py               # → dist/*.shortcut (inkl. Wochenstatus für de
 shortcuts list                 # Namenskonflikte prüfen
 ```
 
-Gibt es schon Kurzbefehle mit gleichem Namen (`<Ort> Start`, `Feierabend`,
-`HO Check`, `HO Ende Check`, `Wochenstatus`): Person fragen, ob die alten weg
+Gibt es schon Kurzbefehle mit gleichem Namen (`<Ort> Start`, `Feierabend`/`Clock Out`,
+`HO Check`, `HO Ende Check`/`HO End Check`, `Wochenstatus`/`Weekly Status`): Person fragen, ob die alten weg
 können — sie selbst löschen lassen. Import legt sonst Duplikate an
 („Ersetzen“ ist unzuverlässig).
 

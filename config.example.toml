@@ -1,4 +1,8 @@
 # Stempeluhr — Konfiguration. Kopieren nach config.toml und anpassen.
+# (English: see config.example.en.toml)
+
+# Sprache der Kurzbefehle und der Auswertung: "de" oder "en"
+sprache = "de"
 
 # Vertragliche Wochenarbeitszeit (netto, ohne Pausen), verteilt auf Mo–Fr
 wochenstunden = 38.5
