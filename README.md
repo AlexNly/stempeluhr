@@ -48,8 +48,24 @@ Kurzbefehle → **Automation** → **+** → **Tageszeit**:
 | 10:00 | Wöchentlich, Mo–Fr | HO Check |
 | 18:00 | Wöchentlich, Mo–Fr | HO Ende Check |
 
-Jeweils **„Sofort ausführen“** wählen. Nur auf **einem** Gerät einrichten (iPhone
-empfohlen), sonst kommt jede Frage doppelt.
+Jeweils **„Sofort ausführen“** wählen und „Bei Ausführung mitteilen“ ausschalten.
+
+**Auf dem iPhone einrichten, nicht auf dem Mac.** Mac-Automationen laufen nur,
+wenn der Mac wach ist — ist er um 10 Uhr zugeklappt, passiert nichts, und es wird
+auch nicht nachgeholt. Und nur auf **einem** Gerät, sonst kommt jede Frage doppelt.
+
+**Vorher jeden Kurzbefehl einmal von Hand starten** und den Dateizugriff
+erlauben. Sonst bleibt die erste automatische Ausführung still an dieser
+Rückfrage hängen.
+
+#### Um 10 Uhr kam keine Frage?
+
+1. Warst du schon eingestempelt? Dann fragt HO Check absichtlich nicht.
+2. Automation auf dem Mac statt dem iPhone? → Mac war vermutlich zu.
+3. Automation steht auf „Vor Ausführen fragen“ statt „Sofort ausführen“?
+4. Wochentage in der Wiederholung vollständig ausgewählt?
+5. HO Check einmal von Hand starten: fragt er, liegt es an der Automation;
+   kommt eine Fehlermeldung oder Zugriffsabfrage, war das die Ursache.
 
 ## Daten
 
@@ -141,7 +157,8 @@ Tests: `python3 -m unittest discover -s tests`
 ## Grenzen
 
 - **HO Check kennt keine Feiertage** — an Feiertagen einfach „Abbrechen“.
-- Automationen laufen nur, wenn das Gerät an ist; auf dem Mac nicht im Ruhezustand.
+- Automationen laufen nur, wenn das Gerät an ist — auf dem Mac nicht im
+  Ruhezustand und ohne Nachholen. Deshalb aufs iPhone.
 - iCloud-Sync: Wer auf zwei Geräten kurz hintereinander stempelt, kann einen
   Sync-Konflikt bekommen. Die wöchentlichen Backups helfen dann.
 - Keine rechtsverbindliche Zeiterfassung — gedacht für den eigenen Überblick.
