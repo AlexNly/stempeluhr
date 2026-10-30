@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stempeluhr — Wochenauswertung und Stundenkonto aus zeiten.csv.
+"""Stempeluhr — Wochenauswertung und Stundenkonto aus zeiten.csv (Deutsch/English).
 
     python3 auswertung.py
 
@@ -16,6 +16,8 @@ import time
 import tomllib
 from collections import defaultdict
 from pathlib import Path
+
+from texte import FEIERTAGE_EN, texte
 
 HERE = Path(__file__).parent
 ICLOUD_SHORTCUTS = Path.home() / "Library/Mobile Documents/iCloud~is~workflow~my~workflows/Documents"
@@ -155,7 +157,7 @@ def day_summary(entries: list[dict]):
     return loc_brutto, total, pause, total - pause
 
 
-def maybe_backup(data: Path) -> None:
+def maybe_backup(data: Path, T: dict[str, str]) -> None:
     """Lokaler Snapshot nach backups/, wenn der letzte ≥ 7 Tage alt ist."""
     backups = HERE / "backups"
     backups.mkdir(exist_ok=True)
@@ -173,22 +175,26 @@ def maybe_backup(data: Path) -> None:
     for f in data.iterdir():
         if f.suffix in {".csv", ".txt"}:
             shutil.copy2(f, dst / f.name)
-    print(f"💾 Backup angelegt: {dst.relative_to(HERE)}\n")
+    print(T["backup"].format(pfad=dst.relative_to(HERE)))
 
 
 # --- Auswertung -----------------------------------------------------------------
 
 def main() -> None:
     cfg = load_config()
+    sprache = cfg.get("sprache", "de")
+    T = texte(sprache)
+    wtag = lambda d: T["wochentage"].split()[d.weekday()]
+    plural = lambda n, eins, viele: T[eins] if n == 1 else T[viele]
     land = cfg["bundesland"]
     if land not in BUNDESLAENDER:
-        raise SystemExit(f"Unbekanntes Bundesland {land!r} — erlaubt: {' '.join(sorted(BUNDESLAENDER))}")
+        raise SystemExit(T["err_land"].format(land=land, alle=" ".join(sorted(BUNDESLAENDER))))
     data = ICLOUD_SHORTCUTS / cfg["ordner"]
     if not data.is_dir():
-        raise SystemExit(f"Datenordner fehlt: {data}\nEinmal einen Start-Kurzbefehl ausführen.")
+        raise SystemExit(T["err_ordner"].format(pfad=data))
     daily_target_min = round(cfg["wochenstunden"] * 60 / 5)
 
-    maybe_backup(data)
+    maybe_backup(data, T)
     rows = read_rows(data / "zeiten.csv", FIELDS)
     absences = {dt.date.fromisoformat(r["datum"]): r["typ"]
                 for r in read_rows(data / "abwesenheiten.csv", ["datum", "typ"])}
@@ -197,9 +203,9 @@ def main() -> None:
         if d in absences:
             return absences[d]
         if name := holidays(d.year, land).get(d):
-            return name
+            return FEIERTAGE_EN.get(name, name) if sprache == "en" else name
         if d.weekday() >= 5:
-            return "Wochenende"
+            return T["wochenende"]
         return None
 
     def daily_target(d: dt.date) -> int:
@@ -236,36 +242,40 @@ def main() -> None:
                      for r in rows) if start else True
         if not logged:
             elapsed = int((dt.datetime.now() - start).total_seconds() // 60)
-            print(f"⏱  {ort} seit {start.strftime('%a %H:%M')} — {fmt(elapsed)}\n")
+            print(T["laufend"].format(ort=ort, wtag=wtag(start), zeit=start.strftime("%H:%M"),
+                                      dauer=fmt(elapsed)))
 
-    print(f"=== Woche ab Mo {current_monday.strftime('%d.%m.%Y')} ===")
+    print(T["woche_ab"].format(datum=current_monday.strftime("%d.%m.%Y")))
     current_dates = sorted(d for d in days if d >= current_monday)
     if not current_dates:
-        print("(noch keine Einträge diese Woche)")
+        print(T["keine_eintraege"])
     else:
         for d in current_dates:
             loc_brutto, total, pause, netto = days[d]
             locs = " + ".join(f"{loc} {fmt(m)}" for loc, m in sorted(loc_brutto.items()))
             reason = day_off_reason(d)
-            tag = f"  [{reason}]" if reason else ""
-            print(f"  {d.strftime('%a %d.%m')}  brutto {fmt(total)}  pause {pause:>2}min  "
-                  f"netto {fmt(netto)}  saldo {signed_fmt(netto - daily_target(d))}  ({locs}){tag}")
-        print("\n  Wochensumme:")
+            print(T["tag"].format(wtag=wtag(d), datum=d.strftime("%d.%m"), brutto=fmt(total),
+                                  pause=pause, netto=fmt(netto),
+                                  saldo=signed_fmt(netto - daily_target(d)), orte=locs,
+                                  grund=f"  [{reason}]" if reason else ""))
+        print(T["wochensumme"])
         for loc, m in sorted(week_brutto[current_monday].items()):
-            print(f"    {loc:12} {fmt(m)} brutto")
+            print(T["brutto_zeile"].format(ort=loc, dauer=fmt(m)))
         n = len(current_dates)
-        print(f"    {'NETTO':12} {fmt(week_netto[current_monday])}  ({n} Tag{'e' if n != 1 else ''})")
-        print(f"    {'SALDO':12} {signed_fmt(week_saldo(current_monday))}")
+        print(T["netto_zeile"].format(dauer=fmt(week_netto[current_monday]), n=n,
+                                      tage=plural(n, "tag_1", "tag_n")))
+        print(T["saldo_zeile"].format(saldo=signed_fmt(week_saldo(current_monday))))
 
     past_weeks = sorted((w for w in week_netto if w < current_monday), reverse=True)[:10]
     if past_weeks:
-        print(f"\n=== Vorherige {len(past_weeks)} Wochen ===")
+        print(T["vorherige"].format(n=len(past_weeks)))
         for w in past_weeks:
             locs = " + ".join(f"{loc} {fmt(m)}" for loc, m in sorted(week_brutto[w].items()))
-            n = sum(1 for d in days if monday_of(d) == w)
-            print(f"  KW {w.isocalendar().week:02d} ({w.strftime('%d.%m')}-"
-                  f"{(w + dt.timedelta(days=6)).strftime('%d.%m')}): netto {fmt(week_netto[w])} "
-                  f"({n}d)  saldo {signed_fmt(week_saldo(w))}  ({locs})")
+            print(T["kw_zeile"].format(
+                kw=w.isocalendar().week, von=w.strftime("%d.%m"),
+                bis=(w + dt.timedelta(days=6)).strftime("%d.%m"), netto=fmt(week_netto[w]),
+                n=sum(1 for d in days if monday_of(d) == w), saldo=signed_fmt(week_saldo(w)),
+                orte=locs))
 
     saldos = [days[d][3] - daily_target(d) for d in sorted(days)]
     if not saldos:
@@ -273,32 +283,32 @@ def main() -> None:
     total_saldo = sum(saldos)
     recent = saldos[-ROLLING_WINDOW_DAYS:]
     recent_avg = sum(recent) // len(recent)
-    print("\n=== Stundenkonto ===")
-    print(f"  Saldo gesamt:           {signed_fmt(total_saldo):>8}  ({len(saldos)} "
-          f"{'geloggter Tag' if len(saldos) == 1 else 'geloggte Tage'})  "
-          f"{'✅' if total_saldo >= 0 else '📉'}")
-    print(f"  Ø pro Tag (gesamt):     {signed_fmt(total_saldo // len(saldos)):>8}")
+    print(T["konto"])
+    print(T["saldo_gesamt"].format(saldo=signed_fmt(total_saldo), n=len(saldos),
+                                   tage=plural(len(saldos), "geloggt_1", "geloggt_n"),
+                                   icon="✅" if total_saldo >= 0 else "📉"))
+    print(T["schnitt_gesamt"].format(saldo=signed_fmt(total_saldo // len(saldos))))
     if len(recent) > 1:
-        print(f"  Ø letzte {len(recent):>2} Tage:        {signed_fmt(recent_avg):>8}")
+        print(T["schnitt_letzte"].format(n=len(recent), saldo=signed_fmt(recent_avg)))
 
     counts = defaultdict(int)
     for typ in absences.values():
         counts[typ] += 1
     bonus = sum(days[d][3] for d in days if day_off_reason(d))
     if counts or bonus:
-        print("\n=== Abwesenheiten ===")
+        print(T["abwesenheiten"])
         for typ, n in sorted(counts.items()):
-            print(f"  {typ + ':':8}{n} Tag{'e' if n != 1 else ''}")
+            print(T["abw_zeile"].format(typ=typ + ":", n=n, tage=plural(n, "tag_1", "tag_n")))
         if bonus:
-            print(f"  Gearbeitet an freien Tagen: {fmt(bonus)} (zählt als Bonus)")
+            print(T["bonus"].format(dauer=fmt(bonus)))
 
     if len(recent) >= 3:
         if recent_avg > 30:
-            print("\n  ⚠️  Letzte Zeit deutlich über Soll — runterfahren wäre gut.")
+            print(T["zu_viel"])
         elif recent_avg < -30:
-            print("\n  📉 Letzte Zeit unter Soll — bei Gelegenheit etwas mehr.")
+            print(T["zu_wenig"])
         else:
-            print("\n  ✅ Du bist im grünen Bereich.")
+            print(T["gruen"])
 
 
 if __name__ == "__main__":

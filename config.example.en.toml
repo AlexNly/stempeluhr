@@ -1,0 +1,21 @@
+# Stempeluhr — configuration. Copy to config.toml and adjust.
+# (Keys stay German so both languages share one format.)
+
+# Language of the shortcuts and the report: "de" or "en"
+sprache = "en"
+
+# Contractual weekly hours (net, without breaks), spread over Mon–Fri
+wochenstunden = 40
+
+# German state for public holidays (code):
+# BW BY BE BB HB HH HE MV NI NW RP SL SN ST SH TH
+bundesland = "NW"
+
+# Folder inside "iCloud Drive/Shortcuts/" holding the data
+ordner = "Stempeluhr"
+
+# Work locations — each gets a "<location> Start" shortcut
+orte = ["Office", "Home Office"]
+
+# Which location is home office? (used by "HO Check" at 10:00 and "HO End Check" at 18:00)
+homeoffice = "Home Office"

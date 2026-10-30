@@ -1,5 +1,7 @@
 # Stempeluhr
 
+🇩🇪 Deutsch · [🇬🇧 English](README.en.md)
+
 Arbeitszeiterfassung mit Apple-Kurzbefehlen — ein- und ausstempeln per Tap, Widget
 oder Siri auf iPhone und Mac, Daten als CSV in iCloud Drive. Dazu eine
 Wochenauswertung mit Stundenkonto nach deutschen Regeln (Pausen nach ArbZG,
@@ -23,7 +25,7 @@ neuer Ordner **`Stempeluhr`**.
 
 ### 2. Kurzbefehle importieren
 
-Die Dateien aus [`kurzbefehle/`](kurzbefehle/) auf iPhone oder Mac öffnen und
+Die Dateien aus [`kurzbefehle/de/`](kurzbefehle/de/) auf iPhone oder Mac öffnen und
 jeweils **„Kurzbefehl hinzufügen“** tippen:
 
 | Kurzbefehl | Was er tut |
@@ -112,7 +114,7 @@ python3 auswertung.py
 
 ```
 === Woche ab Mo 26.10.2026 ===
-  Mon 26.10  brutto 8h 06  pause 30min  netto 7h 36  saldo -0h 06  (Büro 8h 06)
+  Mo 26.10  brutto 8h 06  pause 30min  netto 7h 36  saldo -0h 06  (Büro 8h 06)
 
 === Stundenkonto ===
   Saldo gesamt:            +12h 40  (93 geloggte Tage)  ✅
@@ -143,7 +145,7 @@ Für eigene Orte, einen anderen Ordnernamen oder Anpassungen (macOS nötig — d
 Signieren geht nur dort):
 
 ```sh
-cp config.example.toml config.toml   # orte = ["Büro", "Kunde", "Homeoffice"], …
+cp config.example.toml config.toml   # orte = ["Büro", "Kunde", "Homeoffice"], sprache, …
 python3 build.py                     # → dist/*.shortcut
 ```
 
@@ -151,6 +153,11 @@ Die Kurzbefehle werden in [`build.py`](build.py) als Python-Code beschrieben
 (Bausteine in [`shortcuts/sclib.py`](shortcuts/sclib.py)) und mit
 `shortcuts sign` signiert. Beim erneuten Import einer geänderten Version den alten
 Kurzbefehl vorher löschen — „Ersetzen“ legt teils ein Duplikat an.
+
+Alle Texte (Kurzbefehle und Auswertung) stehen in [`texte.py`](texte.py) — auf
+Deutsch und Englisch, umgeschaltet mit `sprache = "de" | "en"` in `config.toml`.
+`python3 build.py --fertig` baut die mitgelieferten Sets in `kurzbefehle/de/` und
+`kurzbefehle/en/` neu.
 
 Tests: `python3 -m unittest discover -s tests`
 
