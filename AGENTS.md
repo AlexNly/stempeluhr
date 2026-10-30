@@ -96,10 +96,16 @@ sie danach von Hand löschen kann.
 
 ### 6. Automationen und iPhone (Anleitung an die Person)
 
-Auf **einem** Gerät (iPhone empfohlen): Kurzbefehle → Automation → + → Tageszeit
+**Auf dem iPhone**, nur dort: Kurzbefehle → Automation → + → Tageszeit
 
 - 10:00, wöchentlich Mo–Fr, „Sofort ausführen“ → **HO Check**
 - 18:00, wöchentlich Mo–Fr, „Sofort ausführen“ → **HO Ende Check**
+
+Nicht auf dem Mac einrichten lassen: Mac-Automationen laufen nur bei wachem Mac
+und werden nicht nachgeholt (häufigste Ursache für „um 10 kam nichts“). Du kannst
+Automationen nicht auslesen — bei Problemen die Checkliste „Um 10 Uhr kam keine
+Frage?“ im README mit der Person durchgehen; `laufend.txt` zeigt, ob sie schon
+eingestempelt war.
 
 Auf dem iPhone jeden Kurzbefehl **einmal von Hand** starten und den
 Dateizugriff erlauben — sonst blockiert die Rückfrage später die Automation.
